@@ -711,9 +711,9 @@ bool Factor(istream& in, int& line, Value & retVal, int sign) {
 			} else {
 				if (sign == 2) {
 					//not true
-					retVal = new Value(true);
-				} else {
 					retVal = new Value(false);
+				} else {
+					retVal = new Value(true);
 				}
 			}
 			break;
