@@ -91,7 +91,7 @@ public:
     
     
     //overloaded equality operator of this with op
-    Value operator==(const Value& op) const;
+    Value operator==(const Value& op) const;    
 	//overloaded greater than operator of this with op
 	Value operator>(const Value& op) const;
 	//overloaded less than operator of this with op
