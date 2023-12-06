@@ -194,13 +194,15 @@ bool DeclStmt(istream& in, int& line) {
 	tok = Parser::GetNextToken(in, line);
 	bool status;
 	if (tok == ASSOP) {
-		status = Expr(in, line);
+		Value retVal;
+		status = Expr(in, line, retVal);
 		if (!status) {
 			ParseError(line, "Missing Assignment Expression");
 			return false;
 		}
 		for (auto i = variables.begin(); i != variables.end(); ++i){
 			defVar[*i] = true;
+			TempsResults[*i] = retVal;
 		}
 		defVar[varName] = true;
 	} else {
