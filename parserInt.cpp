@@ -568,20 +568,32 @@ bool LogANDExpr(istream& in, int& line, Value & retVal) {
 //RelExpr ::= SimpleExpr [ ( = | < | > ) SimpleExpr ]
 bool RelExpr(istream& in, int& line, Value & retVal) {
 	
-	bool status = SimpleExpr(in, line);
+	bool status = SimpleExpr(in, line, retVal);
 	if (!status) {
 		ParseError(line, "Missing SimpleExpr");
 		return false;
 	}
-
+	Value val = retVal;
 	LexItem tok = Parser::GetNextToken(in, line);
 
 	if (tok == EQ || tok == LTHAN || tok == GTHAN) {
-		status = SimpleExpr(in, line);
+		status = SimpleExpr(in, line, retVal);
 		if (!status) {
 			ParseError(line, "Missing SimpleExpr");
 			return false;
 		}
+		if (tok == EQ) {
+			val = val == retVal;
+		} else if (tok == LTHAN) {
+			val = val < retVal;
+		} else {
+			val = val > retVal;
+		}
+		if (val.IsErr()) {
+			ParseError(line, "Run-Time Error-Illegal Mixed Type Operands in RelExpr");
+			return false;
+		}
+		retVal = val;
 	} else {
 		Parser::PushBackToken(tok);
 	}
