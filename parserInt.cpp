@@ -443,9 +443,8 @@ bool IfStmt(istream& in, int& line) {
 bool AssignStmt(istream& in, int& line) {
 	//IDENT token already used
 	LexItem tok = Parser::GetNextToken(in, line);
-	Parser::PushBackToken(tok);
 	string varName = tok.GetLexeme();
-	bool status = Var(in, line);
+	bool status = Var(in, line, tok);
 
 	if (!status){ 
 		ParseError(line, "Error in Var");
@@ -468,10 +467,9 @@ bool AssignStmt(istream& in, int& line) {
 	defVar[varName] = true;
 	return status;
 }
-
-bool Var(istream& in, int& line) {
-	LexItem tok = Parser::GetNextToken(in, line);
-	string varName = tok.GetLexeme();
+//Var ::= IDENT
+bool Var(istream& in, int& line, LexItem & idtok) {
+	string varName = idtok.GetLexeme();
 
 	if (defVar.find(varName) == defVar.end()) {
 		ParseError(line, "Variable Not Declared");
@@ -511,7 +509,7 @@ bool ExprList(istream& in, int& line) {
 }//ExprList
 
 //Expr ::= LogOrExpr ::= LogAndExpr { OR LogAndExpr }
-bool Expr(istream& in, int& line){
+bool Expr(istream& in, int& line, Value & retVal){
 
 	while (true) {
 		bool status = LogANDExpr(in, line);
@@ -529,7 +527,7 @@ bool Expr(istream& in, int& line){
 }
 
 //LogAndExpr ::= RelExpr {AND RelExpr }
-bool LogANDExpr(istream& in, int& line) {
+bool LogANDExpr(istream& in, int& line, Value & retVal) {
 	while (true) {
 		bool status = RelExpr(in, line);
 	
@@ -547,7 +545,7 @@ bool LogANDExpr(istream& in, int& line) {
 }
 
 //RelExpr ::= SimpleExpr [ ( = | < | > ) SimpleExpr ]
-bool RelExpr(istream& in, int& line) {
+bool RelExpr(istream& in, int& line, Value & retVal) {
 	
 	bool status = SimpleExpr(in, line);
 	if (!status) {
@@ -571,7 +569,7 @@ bool RelExpr(istream& in, int& line) {
 }
 
 //SimpleExpr :: Term { ( + | - ) Term 
-bool SimpleExpr(istream& in, int& line) {
+bool SimpleExpr(istream& in, int& line, Value & retVal) {
 	while (true) {
 		bool status = Term(in, line);
 		if (!status) {
@@ -589,7 +587,7 @@ bool SimpleExpr(istream& in, int& line) {
 }
 
 //Term ::= SFactor { ( * | / | DIV | MOD ) SFactor }
-bool Term(istream& in, int& line) {
+bool Term(istream& in, int& line, Value & retVal) {
 	while (true) {
 		bool status = SFactor(in, line);
 		if (!status) {
@@ -606,7 +604,7 @@ bool Term(istream& in, int& line) {
 }
 
 //SFactor ::= [( - | + | NOT )] Factor
-bool SFactor(istream& in, int& line) {
+bool SFactor(istream& in, int& line, Value & retVal) {
 	LexItem tok = Parser::GetNextToken(in, line);
 
 	int sign = 0;
@@ -631,7 +629,7 @@ bool SFactor(istream& in, int& line) {
 }
 
 // Factor ::= IDENT | ICONST | RCONST | SCONST | BCONST | (Expr)
-bool Factor(istream& in, int& line, int sign) {
+bool Factor(istream& in, int& line, Value & retVal, int sign) {
 	LexItem tok = Parser::GetNextToken(in, line);
 
 	if (tok != IDENT && tok != ICONST && tok != RCONST && tok!= SCONST && tok != BCONST && tok != LPAREN) {
