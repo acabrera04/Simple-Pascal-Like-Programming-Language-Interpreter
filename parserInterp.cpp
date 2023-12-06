@@ -432,17 +432,25 @@ bool IfStmt(istream& in, int& line) {
 			ParseError(line, "Error in IfStmt-Stmt");
 			return false;
 		}
-
+		tok = Parser::GetNextToken(in, line);
+		while (tok != END && tok != SEMICOL) {
+			//if theres and else clause it burns through all the tokens until it reaches the end of the line
+			tok = Parser::GetNextToken(in, line);
+		}
+		Parser::PushBackToken(tok);
 	} else {
 		// else conditional
 		tok = Parser::GetNextToken(in, line);
-
+		while (tok != END && tok != SEMICOL && tok != ELSE) {
+			//burns through the then statement until it finds an ELSE or end of line
+			tok = Parser::GetNextToken(in, line);
+		}
 		if (tok != ELSE) {
 			Parser::PushBackToken(tok);
 		} else {
 			status = Stmt(in, line);
 			if (!status) {
-				ParseError(line, "Error in IfStmt-Stmt");
+				ParseError(line, "Error in IfStmt-ELSE");
 				return false;
 			}
 		}
