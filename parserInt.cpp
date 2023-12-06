@@ -7,9 +7,12 @@
 
 #include "parserInt.h"
 #include <vector>
-
+//checks if the variable has been assigned
 map<string, bool> defVar;
+//stores the type of the variable
 map<string, Token> SymTable;
+//stores the value of the variable
+map<string, Value> TempsResults;
 
 namespace Parser {
 	bool pushed_back = false;
