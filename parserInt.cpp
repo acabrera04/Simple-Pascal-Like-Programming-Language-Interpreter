@@ -609,19 +609,47 @@ bool SimpleExpr(istream& in, int& line, Value & retVal) {
 
 //Term ::= SFactor { ( * | / | DIV | MOD ) SFactor }
 bool Term(istream& in, int& line, Value & retVal) {
-	while (true) {
-		bool status = SFactor(in, line);
+	bool status = SFactor(in, line, retVal);
+	if (!status) {
+		ParseError(line, "Missing SFactor");
+		return false;
+	}
+	Value val1 = retVal;
+
+	LexItem tok = Parser::GetNextToken(in, line);
+
+	while (tok == MULT || tok == IDIV || tok == DIV || tok == MOD) {
+		Token tokType = tok.GetToken();
+		bool status = SFactor(in, line, retVal);
 		if (!status) {
 			ParseError(line, "Missing SFactor");
 			return false;
 		}
-		LexItem tok = Parser::GetNextToken(in, line);
-		if (tok != MULT && tok != IDIV && tok != DIV && tok != MOD) {
-			Parser::PushBackToken(tok);
-			break;
+
+		switch (tokType) {
+			case MULT:
+				retVal = val1 * retVal;
+				break;
+			case IDIV:
+				retVal = val1.idiv(retVal);
+				break;
+			case DIV:
+				retVal = val1 / retVal;
+				break;
+			case MOD:
+				retVal = val1 % retVal;
+				break;
+			default:
+				break;
 		}
+		if (retVal.IsErr()) {
+			ParseError(line, "Run-Time Error-Illegal Mixed Type Operands in Term");
+			return false;
+		}
+		tok = Parser::GetNextToken(in, line);
 	}
-	return true;
+	Parser::PushBackToken(tok);
+	return status;
 }
 
 //SFactor ::= [( - | + | NOT )] Factor
