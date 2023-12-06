@@ -514,8 +514,11 @@ bool AssignStmt(istream& in, int& line) {
 		ParseError(line, "Runtime Error-Type mismatch when assigning to variable "+varName);
 		return false;
 		break;
-	}
+	default:
+		break;
 
+	}
+	
 	TempsResults[varName] = retVal;
 	defVar[varName] = true;
 	return status;
@@ -593,7 +596,6 @@ bool Expr(istream& in, int& line, Value & retVal){
 bool LogANDExpr(istream& in, int& line, Value & retVal) {
 	Value val1, val2;
 	bool status = RelExpr(in, line, val1);
-	LexItem tok;
 	if (!status) { 
 		ParseError(line, "Missing RelExpr");
 		return false;
