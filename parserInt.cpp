@@ -7,6 +7,7 @@
 
 #include "parserInt.h"
 #include <vector>
+#include <queue>
 //checks if the variable has been assigned
 map<string, bool> defVar;
 //stores the type of the variable
@@ -14,7 +15,7 @@ map<string, Token> SymTable;
 //stores the value of the variable
 map<string, Value> TempsResults;
 //used by writeLn to keep track of value obects from exprList
-queue <Value> * ValQue;
+std::queue <Value> * ValQue;
 namespace Parser {
 	bool pushed_back = false;
 	LexItem	pushed_token;
@@ -482,13 +483,13 @@ bool Var(istream& in, int& line, LexItem & idtok) {
 bool ExprList(istream& in, int& line) {
 	bool status = false;
 	//cout << "in ExprList and before calling Expr" << endl;
-
-	status = Expr(in, line);
+	Value retVal;
+	status = Expr(in, line, retVal);
 	if(!status){
 		ParseError(line, "Missing Expression");
 		return false;
 	}
-	
+	ValQue->push(retVal);
 	LexItem tok = Parser::GetNextToken(in, line);
 	
 	if (tok == COMMA) {
