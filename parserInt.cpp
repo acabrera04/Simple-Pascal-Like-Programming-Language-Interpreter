@@ -591,18 +591,35 @@ bool RelExpr(istream& in, int& line, Value & retVal) {
 
 //SimpleExpr :: Term { ( + | - ) Term 
 bool SimpleExpr(istream& in, int& line, Value & retVal) {
-	while (true) {
-		bool status = Term(in, line);
+	bool status = Term(in, line, retVal);
+	if (!status) {
+		ParseError(line, "Missing Term");
+		return false;
+	}
+	Value val = retVal;
+	LexItem tok = Parser::GetNextToken(in, line);
+	while (tok == PLUS || tok == MINUS) {
+		status = Term(in, line, retVal);
 		if (!status) {
 			ParseError(line, "Missing Term");
 			return false;
 		}
-		LexItem tok = Parser::GetNextToken(in, line);
-		if (tok != PLUS && tok != MINUS) {
-			Parser::PushBackToken(tok);
+		switch (tok.GetToken()) {
+		case PLUS:
+			val = val + retVal;
+			break;
+		case MINUS:
+			val = val - retVal;
+			break;
+		default:
 			break;
 		}
+
+		tok = Parser::GetNextToken(in, line);
+		
 	}
+	retVal = val;
+	Parser::PushBackToken(tok);
 
 	return true;
 }
