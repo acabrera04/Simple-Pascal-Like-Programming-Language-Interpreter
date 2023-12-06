@@ -848,5 +848,5 @@ bool Factor(istream& in, int& line, Value & retVal, int sign) {
 			ParseError(line, "Missing IDENT, ICONST, RCONST, SCONST, BCONST, or LPAREN");
 			return false;
 	}
-
+	return true;
 }
