@@ -528,19 +528,40 @@ bool Expr(istream& in, int& line, Value & retVal){
 
 //LogAndExpr ::= RelExpr {AND RelExpr }
 bool LogANDExpr(istream& in, int& line, Value & retVal) {
-	while (true) {
-		bool status = RelExpr(in, line);
-	
+	Value val1, val2;
+	bool status = RelExpr(in, line, val1);
+	LexItem tok;
+	if (!status) { 
+		ParseError(line, "Missing RelExpr");
+		return false;
+	}
+	retVal = val1;
+	LexItem tok = Parser::GetNextToken(in, line);
+	if(tok.GetToken() == ERR){
+		ParseError(line, "Unrecognized Input Pattern");
+		cout << "(" << tok.GetLexeme() << ")" << endl;
+		return false;
+	}
+	while (tok == AND) {
+		status = RelExpr(in, line, val2);
+
 		if (!status) { 
 			ParseError(line, "Missing RelExpr");
 			return false;
 		}
-		LexItem tok = Parser::GetNextToken(in, line);
-		if (tok != AND) {
-			Parser::PushBackToken(tok);
-			break;
+		retVal = retVal && val2;
+		if (retVal.IsErr()) {
+			ParseError(line, "Run-Time Error-Illegal Mixed Type Operands");
+			return false;
+		}
+		tok = Parser::GetNextToken(in, line);
+		if(tok.GetToken() == ERR){
+			ParseError(line, "Unrecognized Input Pattern");
+			cout << "(" << tok.GetLexeme() << ")" << endl;
+			return false;
 		}
 	}
+	Parser::PushBackToken(tok);
 	return true;
 }
 
