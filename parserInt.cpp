@@ -614,7 +614,7 @@ bool SimpleExpr(istream& in, int& line, Value & retVal) {
 		default:
 			break;
 		}
-		if (retVal.IsErr()) {
+		if (val.IsErr()) {
 			ParseError(line, "Run-Time Error-Illegal Mixed Type Operands in SimpleExpr");
 			return false;
 		}
