@@ -5,7 +5,7 @@
  * Fall 2023
 */
 
-#include "parserInt.h"
+#include "parserInterp.h"
 #include <vector>
 #include <queue>
 //checks if the variable has been assigned
