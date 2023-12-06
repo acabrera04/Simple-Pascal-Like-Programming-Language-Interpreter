@@ -641,7 +641,7 @@ bool Term(istream& in, int& line, Value & retVal) {
 
 	while (tok == MULT || tok == IDIV || tok == DIV || tok == MOD) {
 		Token tokType = tok.GetToken();
-		bool status = SFactor(in, line, retVal);
+		status = SFactor(in, line, retVal);
 		if (!status) {
 			ParseError(line, "Missing SFactor");
 			return false;
