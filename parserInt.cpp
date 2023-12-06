@@ -404,39 +404,48 @@ bool IfStmt(istream& in, int& line) {
 		ParseError(line, "Missing IF");
 		return false;
 	}
-	bool status = Expr(in, line);
+	Value retVal;
+	bool status = Expr(in, line, retVal);
 
 	if (!status) {
 		ParseError(line, "Error in IfStmt-Expr");
 		return false;
 	}
-
-	tok = Parser::GetNextToken(in, line);
-
-	if (tok != THEN) {
-		ParseError(line, "Missing THEN");
+	// checks if the evaluation is a boolean
+	if (!retVal.IsBool()) {
+		ParseError(line, "Run-Time Error-Non boolean type in IfStmt");
 		return false;
 	}
+	if (retVal.GetBool() == true) {
+		tok = Parser::GetNextToken(in, line);
 
-	status = Stmt(in, line);
+		if (tok != THEN) {
+			ParseError(line, "Missing THEN");
+			return false;
+		}
 
-	if (!status) {
-		ParseError(line, "Error in IfStmt-Stmt");
-		return false;
-	}
-	tok = Parser::GetNextToken(in, line);
-
-	if (tok != ELSE) {
-		Parser::PushBackToken(tok);
-		return true;
-	} else {
 		status = Stmt(in, line);
+
 		if (!status) {
 			ParseError(line, "Error in IfStmt-Stmt");
 			return false;
 		}
-		return true;
+
+	} else {
+		// else conditional
+		tok = Parser::GetNextToken(in, line);
+
+		if (tok != ELSE) {
+			Parser::PushBackToken(tok);
+		} else {
+			status = Stmt(in, line);
+			if (!status) {
+				ParseError(line, "Error in IfStmt-Stmt");
+				return false;
+			}
+		}
 	}
+	return true;
 }
 
 //AssignStmt ::= Var := Expr
