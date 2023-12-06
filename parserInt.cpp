@@ -629,7 +629,7 @@ bool SFactor(istream& in, int& line, Value & retVal) {
 	LexItem tok = Parser::GetNextToken(in, line);
 
 	int sign = 0;
-
+	//1 is negative
 	if (tok == MINUS) {
 		sign = 1;
 	} else if (tok == PLUS) {
@@ -652,11 +652,7 @@ bool SFactor(istream& in, int& line, Value & retVal) {
 // Factor ::= IDENT | ICONST | RCONST | SCONST | BCONST | (Expr)
 bool Factor(istream& in, int& line, Value & retVal, int sign) {
 	LexItem tok = Parser::GetNextToken(in, line);
-
-	if (tok != IDENT && tok != ICONST && tok != RCONST && tok!= SCONST && tok != BCONST && tok != LPAREN) {
-		ParseError(line, "Missing IDENT, ICONST, RCONST, SCONST, BCONST, or LPAREN");
-		return false;
-	}
+	
 	if (tok == LPAREN) {
 		bool status = Expr(in, line);
 		if (!status) {
@@ -670,5 +666,53 @@ bool Factor(istream& in, int& line, Value & retVal, int sign) {
 			return false;
 		}
 	}
-	return true;
+	switch (tok.GetToken()) {
+	case IDENT:
+
+		break;
+	case ICONST:
+		//converts string lexeme to int
+		if (sign ==1) {
+			// negative value
+			retVal = new Value(-std::stoi(tok.GetLexeme()));
+		} else {
+			retVal = new Value(std::stoi(tok.GetLexeme()));
+		}
+		break;
+	case RCONST:
+		//converts string lexeme to double
+		if (sign == 1) {
+			//negative value
+			retVal = new Value(-std::stof(tok.GetLexeme()));
+		} else {
+			retVal = new Value(std::stof(tok.GetLexeme()));
+		}
+		
+		break;
+	case SCONST:
+		retVal = new Value(tok.GetLexeme());
+		break;
+	case BCONST:
+		//converts string lexeme to bool
+		if (tok.GetLexeme() == "false") {
+			if (sign == 2) {
+				//not false
+				retVal = new Value(true);
+			} else {
+				retVal = new Value(false);
+			}
+		} else {
+			if (sign == 2) {
+				//not true
+				retVal = new Value(true);
+			} else {
+				retVal = new Value(false);
+			}
+		}
+		break;
+	default:
+		ParseError(line, "Missing IDENT, ICONST, RCONST, SCONST, BCONST, or LPAREN");
+		return false;
+	}
+
 }
