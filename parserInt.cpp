@@ -640,7 +640,7 @@ bool SFactor(istream& in, int& line, Value & retVal) {
 		Parser::PushBackToken(tok);
 	}
 
-	bool status = Factor(in, line, sign);
+	bool status = Factor(in, line, retVal, sign);
 
 	if (!status) {
 		ParseError(line, "Missing Factor");
