@@ -13,7 +13,8 @@ map<string, bool> defVar;
 map<string, Token> SymTable;
 //stores the value of the variable
 map<string, Value> TempsResults;
-
+//used by writeLn to keep track of value obects from exprList
+queue <Value> * ValQue;
 namespace Parser {
 	bool pushed_back = false;
 	LexItem	pushed_token;
@@ -334,7 +335,7 @@ bool SimpleStmt(istream& in, int& line) {
 bool WriteLnStmt(istream& in, int& line) {
 	LexItem t;
 	//cout << "in WriteStmt" << endl;
-	
+	ValQue = new queue<Value>;
 	t = Parser::GetNextToken(in, line);
 
 	if( t != LPAREN ) {
@@ -356,6 +357,11 @@ bool WriteLnStmt(istream& in, int& line) {
 		ParseError(line, "Missing Right Parenthesis");
 		return false;
 	}
+	while (!(*ValQue).empty()) {
+		cout << (*ValQue).front();
+		ValQue->pop();
+	}
+	cout << endl;
 	//Evaluate: print out the list of expressions values
 
 	return ex;
