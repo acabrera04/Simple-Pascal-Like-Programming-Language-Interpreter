@@ -531,6 +531,7 @@ bool Expr(istream& in, int& line, Value & retVal){
 		tok = Parser::GetNextToken(in, line);
 		
 	}
+	retVal = val;
 	Parser::PushBackToken(tok);
 	return true;
 }
