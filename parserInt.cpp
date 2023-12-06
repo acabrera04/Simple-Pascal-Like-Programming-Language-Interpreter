@@ -451,20 +451,61 @@ bool AssignStmt(istream& in, int& line) {
 		ParseError(line, "Error in Var");
 		return false;
 	}
-	//Token type = SymTable[varName];
+	Token type = SymTable[varName];
 
 	tok = Parser::GetNextToken(in, line);
 	if (tok != ASSOP) {
 		ParseError(line, "Missing ASSOP");
 		return false;
 	}
-	
-	status = Expr(in, line);
+	Value retVal;
+	status = Expr(in, line, retVal);
 
 	if (!status){ 
 		ParseError(line, "Missing Expr");
 		return false;
 	}
+
+	switch (type) {
+	case INTEGER:
+		if (retVal.IsReal()) {
+			TempsResults[varName] = new Value((int) retVal.GetReal());
+		} else if (retVal.IsInt()) {
+			TempsResults[varName] = retVal;
+		} else {
+			type = ERR;
+		}
+		break;
+	case REAL:
+		if (retVal.IsReal()) {
+			TempsResults[varName] = retVal;
+		} else if (retVal.IsInt()) {
+			TempsResults[varName] = Value((float) retVal.GetInt());
+		} else {
+			type = ERR;
+		}
+		break;
+	case BOOLEAN:
+		if (retVal.IsBool()) {
+			TempsResults[varName] = retVal;
+		} else {
+			type = ERR;
+		}
+		break;
+	case STRING:
+		if (retVal.IsString()) {
+			TempsResults[varName] = retVal;
+		} else {
+			type = ERR;
+		}
+		break;
+	case ERR:
+		ParseError(line, "Runtime Error-Type mismatch when assigning to variable "+varName);
+		return false;
+		break;
+	}
+
+	TempsResults[varName] = retVal;
 	defVar[varName] = true;
 	return status;
 }
