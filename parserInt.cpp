@@ -654,7 +654,7 @@ bool Factor(istream& in, int& line, Value & retVal, int sign) {
 	LexItem tok = Parser::GetNextToken(in, line);
 	
 	if (tok == LPAREN) {
-		bool status = Expr(in, line);
+		bool status = Expr(in, line, retVal);
 		if (!status) {
 			ParseError(line, "Missing Expr");
 			return false;
@@ -665,54 +665,61 @@ bool Factor(istream& in, int& line, Value & retVal, int sign) {
 			ParseError(line, "Missing R	PAREN");
 			return false;
 		}
+		return status;
 	}
 	switch (tok.GetToken()) {
-	case IDENT:
-
-		break;
-	case ICONST:
-		//converts string lexeme to int
-		if (sign ==1) {
-			// negative value
-			retVal = new Value(-std::stoi(tok.GetLexeme()));
-		} else {
-			retVal = new Value(std::stoi(tok.GetLexeme()));
-		}
-		break;
-	case RCONST:
-		//converts string lexeme to double
-		if (sign == 1) {
-			//negative value
-			retVal = new Value(-std::stof(tok.GetLexeme()));
-		} else {
-			retVal = new Value(std::stof(tok.GetLexeme()));
-		}
-		
-		break;
-	case SCONST:
-		retVal = new Value(tok.GetLexeme());
-		break;
-	case BCONST:
-		//converts string lexeme to bool
-		if (tok.GetLexeme() == "false") {
-			if (sign == 2) {
-				//not false
-				retVal = new Value(true);
+		case IDENT:
+			//checks to see if the variable was ever initalized
+			if (TempsResults.find(tok.GetLexeme()) == TempsResults.end()) {
+				ParseError(line, "Runtime Error-Uninitalized Variable");
+				return false;
 			} else {
-				retVal = new Value(false);
+				retVal = TempsResults[tok.GetLexeme()];
 			}
-		} else {
-			if (sign == 2) {
-				//not true
-				retVal = new Value(true);
+			break;
+		case ICONST:
+			//converts string lexeme to int
+			if (sign ==1) {
+				// negative value
+				retVal = new Value(-std::stoi(tok.GetLexeme()));
 			} else {
-				retVal = new Value(false);
+				retVal = new Value(std::stoi(tok.GetLexeme()));
 			}
-		}
-		break;
-	default:
-		ParseError(line, "Missing IDENT, ICONST, RCONST, SCONST, BCONST, or LPAREN");
-		return false;
+			break;
+		case RCONST:
+			//converts string lexeme to double
+			if (sign == 1) {
+				//negative value
+				retVal = new Value(-std::stof(tok.GetLexeme()));
+			} else {
+				retVal = new Value(std::stof(tok.GetLexeme()));
+			}
+			
+			break;
+		case SCONST:
+			retVal = new Value(tok.GetLexeme());
+			break;
+		case BCONST:
+			//converts string lexeme to bool
+			if (tok.GetLexeme() == "false") {
+				if (sign == 2) {
+					//not false
+					retVal = new Value(true);
+				} else {
+					retVal = new Value(false);
+				}
+			} else {
+				if (sign == 2) {
+					//not true
+					retVal = new Value(true);
+				} else {
+					retVal = new Value(false);
+				}
+			}
+			break;
+		default:
+			ParseError(line, "Missing IDENT, ICONST, RCONST, SCONST, BCONST, or LPAREN");
+			return false;
 	}
 
 }
