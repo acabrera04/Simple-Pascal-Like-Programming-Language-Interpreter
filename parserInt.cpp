@@ -510,19 +510,28 @@ bool ExprList(istream& in, int& line) {
 
 //Expr ::= LogOrExpr ::= LogAndExpr { OR LogAndExpr }
 bool Expr(istream& in, int& line, Value & retVal){
-
-	while (true) {
-		bool status = LogANDExpr(in, line);
+	bool status = LogANDExpr(in, line, retVal);
+	Value val = retVal;
+	if (!status) { 
+		ParseError(line, "Missing LogANDExpr");
+		return false;
+	}
+	LexItem tok = Parser::GetNextToken(in, line);
+	while (tok == OR) {
+		status = LogANDExpr(in, line, retVal);
 		if (!status) { 
 			ParseError(line, "Missing LogANDExpr");
 			return false;
 		}
-		LexItem tok = Parser::GetNextToken(in, line);
-		if (tok != OR) {
-			Parser::PushBackToken(tok);
-			break;
+		val = val || retVal;
+		if (val.IsErr()) {
+			ParseError(line, "Run-Time Error-Illegal Mixed Type Operands in Expr");
+			return false;
 		}
+		tok = Parser::GetNextToken(in, line);
+		
 	}
+	Parser::PushBackToken(tok);
 	return true;
 }
 
