@@ -649,26 +649,27 @@ bool Term(istream& in, int& line, Value & retVal) {
 
 		switch (tokType) {
 			case MULT:
-				retVal = val1 * retVal;
+				val1 = val1 * retVal;
 				break;
 			case IDIV:
-				retVal = val1.idiv(retVal);
+				val1 = val1.idiv(retVal);
 				break;
 			case DIV:
-				retVal = val1 / retVal;
+				val1 = val1 / retVal;
 				break;
 			case MOD:
-				retVal = val1 % retVal;
+				val1 = val1 % retVal;
 				break;
 			default:
 				break;
 		}
-		if (retVal.IsErr()) {
+		if (val1.IsErr()) {
 			ParseError(line, "Run-Time Error-Illegal Mixed Type Operands in Term");
 			return false;
 		}
 		tok = Parser::GetNextToken(in, line);
 	}
+	retVal = val1;
 	Parser::PushBackToken(tok);
 	return status;
 }
