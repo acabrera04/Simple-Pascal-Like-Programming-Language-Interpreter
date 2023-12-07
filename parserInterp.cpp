@@ -488,7 +488,7 @@ bool AssignStmt(istream& in, int& line) {
 	switch (type) {
 	case INTEGER:
 		if (retVal.IsReal()) {
-			TempsResults[varName] = new Value((int) retVal.GetReal());
+			TempsResults[varName] = Value((int) retVal.GetReal());
 		} else if (retVal.IsInt()) {
 			TempsResults[varName] = retVal;
 		} else {
@@ -527,7 +527,7 @@ bool AssignStmt(istream& in, int& line) {
 
 	}
 	
-	TempsResults[varName] = retVal;
+	//TempsResults[varName] = retVal;
 	defVar[varName] = true;
 	return status;
 }
@@ -816,39 +816,39 @@ bool Factor(istream& in, int& line, Value & retVal, int sign) {
 			//converts string lexeme to int
 			if (sign ==1) {
 				// negative value
-				retVal = new Value(-std::stoi(tok.GetLexeme()));
+				retVal = Value(-std::stoi(tok.GetLexeme()));
 			} else {
-				retVal = new Value(std::stoi(tok.GetLexeme()));
+				retVal = Value(std::stoi(tok.GetLexeme()));
 			}
 			break;
 		case RCONST:
 			//converts string lexeme to double
 			if (sign == 1) {
 				//negative value
-				retVal = new Value(-std::stof(tok.GetLexeme()));
+				retVal = Value(-std::stof(tok.GetLexeme()));
 			} else {
-				retVal = new Value(std::stof(tok.GetLexeme()));
+				retVal = Value(std::stof(tok.GetLexeme()));
 			}
 			
 			break;
 		case SCONST:
-			retVal = new Value(tok.GetLexeme());
+			retVal = Value(tok.GetLexeme());
 			break;
 		case BCONST:
 			//converts string lexeme to bool
 			if (tok.GetLexeme() == "false") {
 				if (sign == 2) {
 					//not false
-					retVal = new Value(true);
+					retVal = Value(true);
 				} else {
-					retVal = new Value(false);
+					retVal = Value(false);
 				}
 			} else {
 				if (sign == 2) {
 					//not true
-					retVal = new Value(false);
+					retVal = Value(false);
 				} else {
-					retVal = new Value(true);
+					retVal = Value(true);
 				}
 			}
 			break;
