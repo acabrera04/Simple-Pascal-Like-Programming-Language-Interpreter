@@ -768,9 +768,9 @@ bool SFactor(istream& in, int& line, Value & retVal) {
 	if (tok == MINUS) {
 		sign = 1;
 	} else if (tok == PLUS) {
-		sign = 0;
-	} else if (tok == NOT) {
 		sign = 2;
+	} else if (tok == NOT) {
+		sign = 3;
 	} else {
 		Parser::PushBackToken(tok);
 	}
@@ -840,20 +840,20 @@ bool Factor(istream& in, int& line, Value & retVal, int sign) {
 			break;
 		case BCONST:
 			//converts string lexeme to bool
-			if (sign == 1) {
+			if (sign == 1 || sign == 2) {
 				ParseError(line, "Runtime Error-Illegal Operand for sign operator");
 				return false;
 			}
 			
 			if (tok.GetLexeme() == "false") {
-				if (sign == 2) {
+				if (sign == 3) {
 					//not false
 					retVal = Value(true);
 				} else {
 					retVal = Value(false);
 				}
 			} else {
-				if (sign == 2) {
+				if (sign == 3) {
 					//not true
 					retVal = Value(false);
 				} else {
