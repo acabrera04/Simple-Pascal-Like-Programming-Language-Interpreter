@@ -8,6 +8,7 @@
 #include "parserInterp.h"
 #include <vector>
 #include <queue>
+using namespace std;
 //checks if the variable has been assigned
 map<string, bool> defVar;
 //stores the type of the variable
@@ -375,7 +376,7 @@ bool WriteStmt(istream& in, int& line) {
 		ParseError(line, "Missing Left Parenthesis");
 		return false;
 	}
-
+	ValQue = new queue<Value>;
 	bool ex = ExprList(in, line);
 	
 	if( !ex ) {
@@ -391,7 +392,10 @@ bool WriteStmt(istream& in, int& line) {
 		return false;
 	}
 	//Evaluate: print out the list of expressions values
-
+	while (!(*ValQue).empty()) {
+		cout << (*ValQue).front();
+		ValQue->pop();
+	}
 	return ex;
 }
 
@@ -443,8 +447,6 @@ bool IfStmt(istream& in, int& line) {
 			}
 			
 		}
-		cout << tok << endl;
-		cout << line << endl;
 		Parser::PushBackToken(tok);
 		
 	} else {
@@ -560,6 +562,7 @@ bool ExprList(istream& in, int& line) {
 		ParseError(line, "Missing Expression");
 		return false;
 	}
+	//cout << retVal << endl;
 	ValQue->push(retVal);
 	LexItem tok = Parser::GetNextToken(in, line);
 	
