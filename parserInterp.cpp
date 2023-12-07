@@ -518,15 +518,14 @@ bool AssignStmt(istream& in, int& line) {
 			type = ERR;
 		}
 		break;
-	case ERR:
-		ParseError(line, "Runtime Error-Type mismatch when assigning to variable "+varName);
-		return false;
-		break;
 	default:
 		break;
 
 	}
-	
+	if (type == ERR) {
+		ParseError(line, "Runtime Error-Type mismatch when assigning to variable "+varName);
+		return false;
+	}
 	//TempsResults[varName] = retVal;
 	defVar[varName] = true;
 	return status;
