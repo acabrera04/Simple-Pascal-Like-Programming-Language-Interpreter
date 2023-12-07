@@ -802,68 +802,86 @@ bool Factor(istream& in, int& line, Value & retVal, int sign) {
 		}
 		return status;
 	}
-	switch (tok.GetToken()) {
-		case IDENT:
-			//checks to see if the variable was ever initalized
-			if (TempsResults.find(tok.GetLexeme()) == TempsResults.end()) {
-				ParseError(line, "Runtime Error-Uninitalized Variable");
-				return false;
-			} else {
-				retVal = TempsResults[tok.GetLexeme()];
-			}
-			break;
-		case ICONST:
-			//converts string lexeme to int
-			if (sign ==1) {
-				// negative value
-				retVal = Value(-std::stoi(tok.GetLexeme()));
-			} else {
-				retVal = Value(std::stoi(tok.GetLexeme()));
-			}
-			break;
-		case RCONST:
-			//converts string lexeme to double
-			if (sign == 1) {
-				//negative value
-				retVal = Value(-std::stof(tok.GetLexeme()));
-			} else {
-				retVal = Value(std::stof(tok.GetLexeme()));
-			}
-			
-			break;
-		case SCONST:
-			if (sign != 0) {
-				ParseError(line, "Runtime Error-Illegal Operand for sign operator");
-				return false;
-			}
-			retVal = Value(tok.GetLexeme());
-			break;
-		case BCONST:
-			//converts string lexeme to bool
-			if (sign == 1 || sign == 2) {
-				ParseError(line, "Runtime Error-Illegal Operand for sign operator");
-				return false;
-			}
-			
-			if (tok.GetLexeme() == "false") {
-				if (sign == 3) {
-					//not false
-					retVal = Value(true);
+	Token type = tok.GetToken();
+	string lexeme = tok.GetLexeme();
+	while (retVal.IsErr()) {
+		switch (type) {
+			case IDENT:
+				//checks to see if the variable was ever initalized
+				if (TempsResults.find(lexeme) == TempsResults.end()) {
+					ParseError(line, "Runtime Error-Uninitalized Variable");
+					return false;
 				} else {
-					retVal = Value(false);
+					Value val = TempsResults[tok.GetLexeme()];
+					//assigning another variables value to a different variable
+					if (val.IsBool()) {
+						type = BCONST;
+						lexeme = val.GetBool() ? "true" : "false";
+					} else if (val.IsInt()) {
+						type = ICONST;
+						lexeme = to_string(val.GetInt());
+					} else if (val.IsReal()) {
+						type = RCONST;
+						lexeme = to_string(val.GetReal());
+					} else {
+						type = SCONST;
+						lexeme = val.GetString();
+					}
 				}
-			} else {
-				if (sign == 3) {
-					//not true
-					retVal = Value(false);
+				break;
+			case ICONST:
+				//converts string lexeme to int
+				if (sign ==1) {
+					// negative value
+					retVal = Value((-1)*(std::stoi(lexeme)));
 				} else {
-					retVal = Value(true);
+					retVal = Value(std::stoi(lexeme));
 				}
-			}
-			break;
-		default:
-			ParseError(line, "Missing IDENT, ICONST, RCONST, SCONST, BCONST, or LPAREN");
-			return false;
+				break;
+			case RCONST:
+				//converts string lexeme to double
+				if (sign == 1) {
+					//negative value
+					retVal = Value((-1)*(std::stof(lexeme)));
+				} else {
+					retVal = Value(std::stof(lexeme));
+				}
+				
+				break;
+			case SCONST:
+				if (sign != 0) {
+					ParseError(line, "Runtime Error-Illegal Operand for sign operator");
+					return false;
+				}
+				retVal = Value(lexeme);
+				break;
+			case BCONST:
+				//converts string lexeme to bool
+				if (sign == 1 || sign == 2) {
+					ParseError(line, "Runtime Error-Illegal Operand for sign operator");
+					return false;
+				}
+				
+				if (lexeme == "false") {
+					if (sign == 3) {
+						//not false
+						retVal = Value(true);
+					} else {
+						retVal = Value(false);
+					}
+				} else {
+					if (sign == 3) {
+						//not true
+						retVal = Value(false);
+					} else {
+						retVal = Value(true);
+					}
+				}
+				break;
+			default:
+				ParseError(line, "Missing IDENT, ICONST, RCONST, SCONST, BCONST, or LPAREN");
+				return false;
+		}
 	}
 	return true;
 }
