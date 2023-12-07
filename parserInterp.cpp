@@ -832,10 +832,19 @@ bool Factor(istream& in, int& line, Value & retVal, int sign) {
 			
 			break;
 		case SCONST:
+			if (sign != 0) {
+				ParseError(line, "Runtime Error-Illegal Operand for sign operator");
+				return false;
+			}
 			retVal = Value(tok.GetLexeme());
 			break;
 		case BCONST:
 			//converts string lexeme to bool
+			if (sign == 1) {
+				ParseError(line, "Runtime Error-Illegal Operand for sign operator");
+				return false;
+			}
+			
 			if (tok.GetLexeme() == "false") {
 				if (sign == 2) {
 					//not false
