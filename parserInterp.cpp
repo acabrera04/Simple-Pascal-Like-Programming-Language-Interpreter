@@ -804,7 +804,7 @@ bool Factor(istream& in, int& line, Value & retVal, int sign) {
 	}
 	Token type = tok.GetToken();
 	string lexeme = tok.GetLexeme();
-	while (retVal.IsErr()) {
+	while (true) {
 		switch (type) {
 			case IDENT:
 				//checks to see if the variable was ever initalized
@@ -837,6 +837,7 @@ bool Factor(istream& in, int& line, Value & retVal, int sign) {
 				} else {
 					retVal = Value(std::stoi(lexeme));
 				}
+				return true;
 				break;
 			case RCONST:
 				//converts string lexeme to double
@@ -846,7 +847,7 @@ bool Factor(istream& in, int& line, Value & retVal, int sign) {
 				} else {
 					retVal = Value(std::stof(lexeme));
 				}
-				
+				return true;
 				break;
 			case SCONST:
 				if (sign != 0) {
@@ -854,6 +855,7 @@ bool Factor(istream& in, int& line, Value & retVal, int sign) {
 					return false;
 				}
 				retVal = Value(lexeme);
+				return true;
 				break;
 			case BCONST:
 				//converts string lexeme to bool
@@ -877,11 +879,11 @@ bool Factor(istream& in, int& line, Value & retVal, int sign) {
 						retVal = Value(true);
 					}
 				}
+				return true;
 				break;
 			default:
 				ParseError(line, "Missing IDENT, ICONST, RCONST, SCONST, BCONST, or LPAREN");
 				return false;
 		}
 	}
-	return true;
 }
