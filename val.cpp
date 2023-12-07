@@ -76,16 +76,28 @@ Value Value::operator/(const Value& op) const {
     }
     if (GetType() == op.GetType()) {
         if (IsReal()) {
+            if (op.GetReal() == 0) {
+                return val;
+            }
             val = GetReal() / op.GetReal();
         } else {
+            if (op.GetInt() == 0) {
+                return val;
+            }
             val = GetInt() / op.GetInt();
         }
     } else {
         if (IsReal()) {
             // first operator is real, second is int
+            if (op.GetInt() == 0) {
+                return val;
+            }
             val = GetReal() / op.GetInt();
         } else {
             // first operator is int, second is real
+            if (op.GetReal() == 0) {
+                return val;
+            }
             val = GetInt() / op.GetReal();
         }
     }
@@ -96,6 +108,9 @@ Value Value::operator/(const Value& op) const {
 Value Value::div(const Value& op) const {
     Value val;
     if (IsInt() && op.IsInt()) {
+        if (op.GetInt() == 0) {
+            return val;
+        }
         val = GetInt() / op.GetInt();
     }
     return val;
@@ -105,6 +120,9 @@ Value Value::div(const Value& op) const {
 Value Value::idiv(const Value& op) const {
     Value val;
     if (IsInt() && op.IsInt()) {
+        if (op.GetInt() == 0) {
+            return val;
+        }
         val = GetInt() / op.GetInt();
     }
     return val;

@@ -736,9 +736,17 @@ bool Term(istream& in, int& line, Value & retVal) {
 				val1 = val1 * retVal;
 				break;
 			case IDIV:
+				if ((retVal.IsInt() && retVal.GetInt() == 0) || (retVal.IsReal() && retVal.GetReal() == 0)) {
+					ParseError(line, "Run-Time Error-Illegal Division by zero");
+					return false;
+				}
 				val1 = val1.idiv(retVal);
 				break;
 			case DIV:
+				if ((retVal.IsInt() && retVal.GetInt() == 0) || (retVal.IsReal() && retVal.GetReal() == 0)) {
+					ParseError(line, "Run-Time Error-Illegal Division by zero");
+					return false;
+				}
 				val1 = val1 / retVal;
 				break;
 			case MOD:
