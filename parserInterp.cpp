@@ -286,7 +286,6 @@ bool CompoundStmt(istream& in, int& line) {
 		}
 		tok = Parser::GetNextToken(in, line);
 		if (tok != SEMICOL) {
-			Parser::PushBackToken(tok);
 			break;
 		}
 	}
@@ -331,8 +330,6 @@ bool SimpleStmt(istream& in, int& line) {
 	}
 	return true;
 }
-
-
 
 //WriteLnStmt ::= writeln (ExprList) 
 bool WriteLnStmt(istream& in, int& line) {
@@ -433,18 +430,31 @@ bool IfStmt(istream& in, int& line) {
 			return false;
 		}
 		tok = Parser::GetNextToken(in, line);
-		while (tok != END && tok != SEMICOL) {
-			//if theres and else clause it burns through all the tokens until it reaches the end of the line
+		if (tok == ELSE) {
 			tok = Parser::GetNextToken(in, line);
+			while (tok != SEMICOL) {
+				//if theres an else clause it burns through all the tokens until it reaches the end of the line
+				if (tok == BEGIN) {
+					while (tok != END) {
+						tok = Parser::GetNextToken(in, line);
+					}
+				}
+				tok = Parser::GetNextToken(in, line);
+			}
+			
 		}
+		cout << tok << endl;
+		cout << line << endl;
 		Parser::PushBackToken(tok);
+		
 	} else {
 		// else conditional
 		tok = Parser::GetNextToken(in, line);
-		while (tok != END && tok != SEMICOL && tok != ELSE) {
+		while (tok != END && tok != SEMICOL) {
 			//burns through the then statement until it finds an ELSE or end of line
 			tok = Parser::GetNextToken(in, line);
 		}
+		tok = Parser::GetNextToken(in, line);
 		if (tok != ELSE) {
 			Parser::PushBackToken(tok);
 		} else {
@@ -461,7 +471,6 @@ bool IfStmt(istream& in, int& line) {
 //AssignStmt ::= Var := Expr
 //Var ::= IDENT
 bool AssignStmt(istream& in, int& line) {
-	//IDENT token already used
 	LexItem tok = Parser::GetNextToken(in, line);
 	string varName = tok.GetLexeme();
 	bool status = Var(in, line, tok);
