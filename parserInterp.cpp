@@ -452,11 +452,15 @@ bool IfStmt(istream& in, int& line) {
 	} else {
 		// else conditional
 		tok = Parser::GetNextToken(in, line);
-		while (tok != END && tok != SEMICOL) {
-			//burns through the then statement until it finds an ELSE or end of line
+		while (tok != SEMICOL && tok != ELSE) {
+			if (tok == BEGIN) {
+				while (tok != END) {
+					tok = Parser::GetNextToken(in, line);
+				}
+			}
 			tok = Parser::GetNextToken(in, line);
 		}
-		tok = Parser::GetNextToken(in, line);
+		
 		if (tok != ELSE) {
 			Parser::PushBackToken(tok);
 		} else {
