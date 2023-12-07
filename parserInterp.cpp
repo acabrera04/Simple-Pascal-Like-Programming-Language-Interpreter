@@ -831,6 +831,10 @@ bool Factor(istream& in, int& line, Value & retVal, int sign) {
 				break;
 			case ICONST:
 				//converts string lexeme to int
+				if (sign == 3) {
+					ParseError(line, "Runtime Error-Illegal Operand for not operator");
+					return false;
+				}
 				if (sign ==1) {
 					// negative value
 					retVal = Value((-1)*(std::stoi(lexeme)));
@@ -841,6 +845,10 @@ bool Factor(istream& in, int& line, Value & retVal, int sign) {
 				break;
 			case RCONST:
 				//converts string lexeme to double
+				if (sign == 3) {
+					ParseError(line, "Runtime Error-Illegal Operand for not operator");
+					return false;
+				}
 				if (sign == 1) {
 					//negative value
 					retVal = Value((-1)*(std::stof(lexeme)));
