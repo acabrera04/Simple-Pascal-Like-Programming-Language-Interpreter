@@ -1,5 +1,5 @@
 # Simple-Pascal-Like-Programming-Language-Interpreter
-An interpreter written in C++ to handle a simple pascal like programming language.
+An interpreter written in C++ to handle a simple pascal like programming language. This was created for a programming assignment as apart of the CS 280 course at NJIT
 
 It uses the following EBNF:
 1. Prog ::= PROGRAM IDENT ; DeclPart CompoundStmt .
